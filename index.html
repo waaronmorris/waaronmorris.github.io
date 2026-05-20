@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="W. Aaron Morris — senior data engineer writing production AI and data systems from a cattle farm in rural Alabama." />
+  <title>W. Aaron Morris — Data Engineer</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9A%AB%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="brand">W. Aaron Morris</a>
+    <nav class="site-nav">
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="/blog/">Blog</a>
+      <button id="theme-toggle" aria-label="Toggle theme">◐</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="about" class="hero">
+      <p class="eyebrow">Hi —</p>
+      <h1>I'm Aaron Morris.</h1>
+      <p class="lede">
+        I write production data systems from a cattle farm in rural Alabama. By
+        day, that's senior data engineering at Just Insure — pricing platforms,
+        Bayesian and ML pipelines, GCP infrastructure, and the LLM agents I'm
+        increasingly building on top.
+      </p>
+      <p class="lede">
+        Twelve years ago I started in insurance audit — SQL scratchpads and
+        quarterly reviews. Over the years I rebuilt that function into a
+        software platform, spent a stretch on the West Coast in Oregon, picked
+        up an applied-math M.S. from Johns Hopkins, and eventually came home to
+        Alabama — by then on the engineering side, building the systems rather
+        than auditing them. Off-hours: 20+ head of cattle, a garden, and side
+        projects I treat as methods to expand the craft — a public dashboard for
+        the Clay County livestock auction, another for Alabama economic
+        indicators, and a Python library powering an MLB analytics platform my
+        friends and I use through the season.
+      </p>
+      <div class="hero-cta">
+        <a href="#projects" class="btn btn-primary">See projects</a>
+        <a href="mailto:w.aaron.morris@gmail.com" class="btn btn-ghost">Get in touch</a>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <h2>Projects</h2>
+      <div class="project-grid">
+        <article class="project-card">
+          <h3>MLB Analytics Platform</h3>
+          <p class="project-meta">Dagster · dbt · DuckDB · Apache Superset</p>
+          <p>
+            End-to-end modern-data-stack analytics platform for Major League
+            Baseball statistics. Dagster orchestrates scheduled ingestion from
+            Statcast, Baseball Reference, and FanGraphs into DuckDB; dbt models
+            apply dimensional modeling; Superset surfaces self-serve dashboards.
+            Asset lineage runs from raw API pulls through marts and visualization.
+          </p>
+          <div class="project-links">
+            <a href="https://github.com/waaronmorris/mlb-superset-dashboard">Code</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <h3>Sleeper Analytics Pro</h3>
+          <p class="project-meta">RAG · Multi-source pipeline · Static deploy</p>
+          <p>
+            Live fantasy-league analytics product built around a RAG architecture
+            over a custom multi-source pipeline. Ingests Sleeper rosters, NFL
+            news, injury feeds, and weekly context stats with per-source cadence
+            and rate-limit handling. LLM prompts are grounded against assembled
+            context to produce per-team weekly recaps and trade analyses.
+          </p>
+          <div class="project-links">
+            <a href="https://waaronmorris.github.io/sleeper-dashboard/">Live</a>
+            <a href="https://github.com/waaronmorris/sleeper-dashboard">Code</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <h3>Alabama Economic Data Dashboard</h3>
+          <p class="project-meta">Observable · TypeScript · FRED API</p>
+          <p>
+            Public-facing economic-monitoring dashboard tracking state and
+            federal macroeconomic indicators via the FRED API. Built on the
+            Observable framework, deployed as a static site on GitHub Pages with
+            automated refresh so non-technical stakeholders can track Alabama's
+            trajectory against national benchmarks.
+          </p>
+          <div class="project-links">
+            <a href="https://waaronmorris.github.io/alabama-economic-data-dashboard/">Live</a>
+            <a href="https://github.com/waaronmorris/alabama-economic-data-dashboard">Code</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <h3>Plyball</h3>
+          <p class="project-meta">Python · Multi-source ingestion · API clients</p>
+          <p>
+            Python client library unifying baseball data from Statcast, Baseball
+            Reference, and FanGraphs behind a single interface. Handles rate
+            limiting, schema normalization across heterogeneous public APIs, and
+            caching — used as the ingestion layer for the MLB Analytics Platform.
+          </p>
+          <div class="project-links">
+            <a href="https://github.com/waaronmorris/plyball">Code</a>
+            <a href="https://plyball.readthedocs.io/en/latest/">Docs</a>
+          </div>
+        </article>
+
+        <article class="project-card">
+          <h3>MCP Server for BigQuery</h3>
+          <p class="project-meta">TypeScript · Model Context Protocol · LLM tooling</p>
+          <p>
+            MCP server exposing BigQuery schema metadata to LLM-powered tools
+            (Claude Code, Cursor). Lets AI coding agents reason over warehouse
+            structure when generating SQL or dbt models, reducing hallucinated
+            column names and types and accelerating analytics-engineering work.
+          </p>
+          <div class="project-links">
+            <a href="https://github.com/waaronmorris/mcp-bigquery-schema">Code</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="experience" class="section">
+      <h2>Experience</h2>
+      <ol class="timeline">
+        <li>
+          <div class="when">2022 — Present</div>
+          <div class="what">
+            <h3>Senior Data Engineer · Just Insure</h3>
+            <p>
+              Built the pricing platform and led a domain-oriented data mesh
+              migration on GCP. Owned end-to-end systems including a real-time
+              rate-comparison engine, an AI sales assistant, and MCP servers
+              feeding warehouse metadata to LLM coding tools.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="when">2016 — 2021</div>
+          <div class="what">
+            <h3>Senior Audit Analyst / IT Auditor · National General Insurance</h3>
+            <p>
+              Designed and built the Continuous Audit Program — a data warehouse
+              and Python anomaly-detection platform that replaced manual reviews
+              with continuous evaluation. Grew the internal Data Analysis
+              Framework into a multi-team analytics platform.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="when">2015 — 2016</div>
+          <div class="what">
+            <h3>Business Intelligence Analyst · Rogue Credit Union</h3>
+            <p>
+              Architected the enterprise data warehouse and led the org-wide
+              Tableau rollout. Built the Rewards Platform for the member loyalty
+              program.
+            </p>
+          </div>
+        </li>
+        <li>
+          <div class="when">2012 — 2015</div>
+          <div class="what">
+            <h3>Audit Data Analyst · Direct General</h3>
+            <p>
+              Built the Audit and Data Analysis Framework — an internal
+              application that automated fraud-detection queries across policy,
+              claims, and billing systems.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <h3 style="margin-top: 2rem; font-size: 1.05rem;">Education</h3>
+      <ol class="timeline">
+        <li>
+          <div class="when">2022</div>
+          <div class="what">
+            <h3>M.S. Applied &amp; Computational Mathematics · Johns Hopkins</h3>
+          </div>
+        </li>
+        <li>
+          <div class="when">2013</div>
+          <div class="what">
+            <h3>B.S. Information Technology · Trevecca Nazarene University</h3>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> W. Aaron Morris</p>
+    <div class="footer-links">
+      <a href="https://github.com/waaronmorris">GitHub</a>
+      <a href="https://linkedin.com/in/w-aaron-morris-a894478">LinkedIn</a>
+      <a href="mailto:w.aaron.morris@gmail.com">Email</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

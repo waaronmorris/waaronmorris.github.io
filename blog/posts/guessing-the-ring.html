@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A childhood game at the Clay County livestock auction, and what it looks like when you put math behind the guess." />
+  <title>Guessing the ring · W. Aaron Morris</title>
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="brand">W. Aaron Morris</a>
+    <nav class="site-nav">
+      <a href="/#about">About</a>
+      <a href="/#projects">Projects</a>
+      <a href="/#experience">Experience</a>
+      <a href="/blog/">Blog</a>
+      <button id="theme-toggle" aria-label="Toggle theme">◐</button>
+    </nav>
+  </header>
+
+  <main>
+    <article class="post">
+      <header class="post-header">
+        <h1>Guessing the ring</h1>
+        <p class="post-meta">2026-05-20 · 8 min read</p>
+      </header>
+
+      <blockquote class="epigraph">
+        <p>"I believe that the best way to create good living conditions for any animal, whether it's a captive animal living in a zoo, a farm animal or a pet, is to base animal welfare programs on the core emotion systems in the brain. My theory is that the environment animals live in should activate their positive emotions as much as possible, and not activate their negative emotions any more than necessary. If we get the animal's emotions right, we will have fewer problem behaviors… All animals and people have the same core emotion systems in the brain."</p>
+        <p class="attribution">— Temple Grandin, <em>Animals Make Us Human</em></p>
+      </blockquote>
+
+      <p>
+        The Clay County Livestock Auction runs in Lineville, Alabama, about
+        fifteen minutes from where I grew up and where I now live again. As a
+        kid I went on sale days and played a game in my head: every time an
+        animal stepped into the ring, I'd guess its weight, the price it would
+        bring per pound, and the total dollar amount the auctioneer would
+        finally call. The numbers got chalked up on a board after each lot, so
+        you got immediate feedback — a closed-loop training set, if you want to
+        be obnoxious about it.
+      </p>
+
+      <p>
+        By middle school I was decent. Not great, but decent. Black baldy
+        steer, looks about a year old, 600 pounds, $1.40 a pound — and the
+        bidding would land within a nickel of it. I didn't know I was doing
+        anything statistical. I just knew that a leggy heifer with no flesh on
+        her ribs would bring less than a stout one of the same weight, that
+        the price flattened out somewhere around weaning weight and then bent
+        the other way for slaughter cows, and that the kind of week it had been
+        in Oklahoma City somehow showed up in our little ring on a Tuesday.
+      </p>
+
+      <p>
+        I moved away after college. Insurance audit in Tennessee, business
+        intelligence in Oregon, a stretch on the West Coast and an applied-math
+        M.S. in between. The auction kept running without me. And now I'm back
+        — same county, same ring, same auctioneer's cadence — and I want to
+        find out what my middle-school self was actually doing.
+      </p>
+
+      <h2>What I came back to</h2>
+
+      <p>
+        The first thing the data tells you is what every cattleman in the
+        South already knows: prices are up — way up — from the numbers I had
+        calibrated to a decade ago. The U.S. cow herd is at its smallest
+        since the early 1950s. Drought across the southern plains in 2021 and
+        2022 pushed producers to sell down breeding stock, and the supply
+        pipeline takes years to refill — a bred cow this spring produces a
+        slaughter steer a year and a half from now, minimum. Less supply,
+        same demand, the line goes up. Every week's report nudges my prior
+        another notch.
+      </p>
+
+      <p>
+        That nudging is the thing I want to make precise. The right prior for
+        what a 600-pound steer should bring isn't a fixed number — it's a
+        belief that should shift in proportion to the weight of recent
+        evidence. Bayes is a clean way to write that down. Twelve-year-old me
+        did it by feel and got slow when the world changed underneath him;
+        the 2022 liquidation would have caught him flat-footed for months.
+        The model shouldn't.
+      </p>
+
+      <h2>Why the big one costs less per pound</h2>
+
+      <p>
+        The thing I could never quite explain to anyone who hadn't sat
+        through a sale day is why a 900-pound steer brings $2.50 a pound
+        while a 500-pound steer brings $3.00 — and yet the 900-pounder still
+        walks out the gate for more money total. The pattern felt obvious to
+        me as a kid. The reason did not.
+      </p>
+
+      <p>
+        The reason has a name in the literature: value of gain. Buyers
+        aren't pricing the meat on the animal in front of them. They're
+        pricing the meat that animal will be when it's finished. A 500-pound
+        calf still has eight hundred pounds of growth ahead of it before a
+        packer takes it, and those pounds come cheap because young animals
+        are feed-efficient. A 900-pound feeder has four or five hundred
+        pounds left, and the last pounds cost more — bigger bodies burn more
+        feed just on maintenance. So the buyer of the lighter calf is
+        implicitly buying a bunch of cheap future pounds attached to it, and
+        pays a premium per pound at the gate to do it. The per-pound curve
+        slopes down as weight goes up. Then it bends back up at slaughter
+        weight, because now you're paying for present meat instead of future
+        potential.
+      </p>
+
+      <p>
+        What ties this together is that cattle grow on a logistic curve.
+        They double their birth weight in two months. They hit half their
+        finish weight inside the first year. By two they're functionally
+        mature. "Cow years" compress the way dog years do — a six-month calf
+        is an adolescent, a yearling is more or less a young adult. The
+        reason feed conversion drops off so steeply is that the animal has
+        passed the inflection point of its growth curve and walked out onto
+        the flat. Every dollar of feed buys fewer pounds. The market knows
+        this even if individual buyers couldn't write down the curve. The
+        auctioneer's price is the market integrating over it in real time.
+      </p>
+
+      <h2>From feel to model</h2>
+
+      <p>
+        The thing kids do when they get good at something like this is build
+        priors. They don't call them that. They just stop being surprised by
+        certain combinations and start being surprised by others, and the
+        surprise is the signal. A 500-pound steer bringing the same per-pound
+        price as a 900-pound steer would have struck me as wrong at twelve
+        years old, before I could have told you why.
+      </p>
+
+      <p>
+        The "why" is that feeder cattle and slaughter cattle live on opposite
+        sides of a curve. Light feeders are bought to put weight on — every
+        pound a buyer adds is a pound they sell later, so they'll pay more per
+        pound at the front end. Heavy slaughter cattle are bought for the meat
+        already on them, so the price-per-pound bends back up as weight goes
+        up. The minimum is somewhere in the middle, and where exactly that
+        minimum sits drifts with feed costs, fuel, drought conditions in
+        Texas, and whatever the packers are paying that week.
+      </p>
+
+      <p>
+        You can squint at that and see a Bayesian setup hiding in it. There's
+        a prior over price-per-pound given weight, cattle type, grade, and
+        category. Each week's auction is an observation. Update, repeat. The
+        question I keep coming back to is whether my childhood intuition was
+        recovering something close to the posterior — or whether I'd just
+        memorized the prior and gotten lucky that the world was stationary
+        enough for it to hold.
+      </p>
+
+      <h2>What's in the dataset</h2>
+
+      <p>
+        USDA's Agricultural Marketing Service publishes the Clay County
+        report. Every sale day, they post a PDF with the lots — weight ranges,
+        head counts, grades, prices realized. I wrote a scraper that pulls the
+        new reports each week and extracts them into a tidy frame. The
+        archive now runs from May 2019 through this spring: a little over
+        fifteen thousand rows, six and a half years of weekly observations,
+        with the categories the report uses — feeder, replacement, slaughter
+        — split out by cattle type and grade.
+      </p>
+
+      <p>
+        That's enough to start asking real questions. Where does the
+        price-weight curve actually bend, and does it move with the season?
+        How much of the variance in price is explained by weight alone versus
+        weight-and-grade versus weight-and-grade-and-week? When the regional
+        feeder market jumps, how long does it take to show up in Lineville —
+        and does it show up evenly across categories, or do bred cows lag
+        steers? I have hunches about all of these. The hunches are exactly
+        the priors I want to test.
+      </p>
+
+      <h2>The dashboard, for now</h2>
+
+      <p>
+        The first cut is a <a href="https://waaronmorris.github.io/livestock-auctions/">public dashboard</a> — price trends by cattle type,
+        volume by category, a recency-weighted regression on weight versus
+        price so the line bends toward the present rather than averaging over
+        six years of inflation. It runs entirely in the browser via Marimo and
+        WASM, so anyone can poke at it without me hosting a server.
+      </p>
+
+      <p>
+        That's the descriptive layer. The Bayesian layer comes next: a proper
+        hierarchical model with priors I can write down, posteriors I can
+        update each week as new reports come in, and predictions I can score
+        against the auctioneer's call. I'm curious whether the model beats
+        twelve-year-old me. I'm more curious about the lots where it doesn't,
+        and what twelve-year-old me knew that the model is missing.
+      </p>
+
+      <p>
+        <a href="https://waaronmorris.github.io/livestock-auctions/">Live dashboard →</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/waaronmorris/livestock-auctions">Code on GitHub →</a>
+      </p>
+
+      <p><a href="/blog/">← Back to all posts</a></p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> W. Aaron Morris</p>
+    <div class="footer-links">
+      <a href="https://github.com/waaronmorris">GitHub</a>
+      <a href="https://linkedin.com/in/w-aaron-morris-a894478">LinkedIn</a>
+      <a href="mailto:w.aaron.morris@gmail.com">Email</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
