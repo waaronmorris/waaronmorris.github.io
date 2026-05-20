@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Two years after the DuckDB post that named it, I built a modern data stack in a box for fantasy baseball — and learned what it does and doesn't replace." />
+  <title>Modern data stack in a box, for baseball · W. Aaron Morris</title>
+  <link rel="stylesheet" href="../../assets/css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a href="/" class="brand">W. Aaron Morris</a>
+    <nav class="site-nav">
+      <a href="/#about">About</a>
+      <a href="/#projects">Projects</a>
+      <a href="/#experience">Experience</a>
+      <a href="/blog/">Blog</a>
+      <button id="theme-toggle" aria-label="Toggle theme">◐</button>
+    </nav>
+  </header>
+
+  <main>
+    <article class="post">
+      <header class="post-header">
+        <h1>Modern data stack in a box, for baseball</h1>
+        <p class="post-meta">2024-10-12 · 7 min read</p>
+      </header>
+
+      <blockquote class="epigraph">
+        <p>"There is a simpler approach."</p>
+        <p class="attribution">— Jacob Matson, <a href="https://duckdb.org/2022/10/12/modern-data-stack-in-a-box"><em>Modern Data Stack in a Box with DuckDB</em></a> (DuckDB blog, 2022)</p>
+      </blockquote>
+
+      <p>
+        Two years ago this week, the DuckDB blog ran a post called
+        <em>Modern Data Stack in a Box</em>. The thesis was straightforward to
+        the point of being uncomfortable: most of what we'd been told required a
+        cloud warehouse and a small dev-ops team actually fits on a laptop.
+        Meltano pulls the data, DuckDB stores and queries it, dbt models it,
+        Superset draws the pictures. No Snowflake bill. No Kubernetes cluster.
+        No "we'll need to provision a new environment for that." Just a
+        docker-compose file and a quiet fan.
+      </p>
+
+      <p>
+        I read it, agreed in principle, and didn't do anything with it for a
+        while. The day job at the time had a real warehouse and real
+        constraints, and the box-sized stack felt like a clever demo more than a
+        thing I'd reach for. What changed my mind was a side problem I'd been
+        carrying for years: the fantasy baseball league my friends and I have
+        kept running through job changes and time zones and at least two
+        babies. We argue about projections, lineups, trades, and waiver-wire
+        moves on a group thread that's been going long enough to have its own
+        folklore. We were doing all of it on screenshots from three different
+        sites and gut feel.
+      </p>
+
+      <h2>The shape of the problem</h2>
+
+      <p>
+        Fantasy baseball is a tidy little data problem hiding under a sport.
+        The raw material is public — Statcast publishes pitch-level data,
+        Baseball Reference has the historical record going back a century,
+        FanGraphs ships projections and advanced metrics every morning during
+        the season. The hard parts are unglamorous: three APIs with three
+        different schemas, three different rate limits, and three different
+        ideas about what a player ID is. Once the data is reconciled, the
+        analytics aren't research-paper hard — they're just a lot of joins
+        and a few rolling windows.
+      </p>
+
+      <p>
+        Which is exactly the shape of problem the box-sized stack is built
+        for. Not enormous data. Not real-time. A lot of medium-sized batch
+        transforms over a stable schema, served to a small number of people
+        who want dashboards and the occasional ad-hoc query. The cloud
+        warehouse pattern is overkill for it. I wanted to find out whether
+        the DuckDB post's argument actually held up when you sat down and
+        built something you'd use for a whole season.
+      </p>
+
+      <h2>The stack I landed on</h2>
+
+      <p>
+        Close to the post's original recipe, with two substitutions. From the
+        outside in:
+      </p>
+
+      <ul>
+        <li><strong>Plyball</strong> — a small Python library I'd already
+          started for unifying Statcast, Baseball Reference, and FanGraphs
+          behind a single interface. It handles the rate limiting, the schema
+          normalization, and the caching. It's the part of the stack that
+          would have been Meltano's job in the original recipe; I needed
+          something more bespoke because none of the three sources are
+          off-the-shelf taps.</li>
+        <li><strong>Dagster</strong> for orchestration. Meltano's fine, but
+          Dagster's asset-graph model fit the way I think about baseball data
+          — players have stats, stats roll up into games, games roll up into
+          seasons, and I wanted to see that lineage in one place. The
+          pipeline writes Parquet to Cloudflare R2, partitioned by season.</li>
+        <li><strong>DuckDB</strong> as the analytical engine. It reads the
+          Parquet files in R2 directly — no separate load step, no ingest
+          tier, just a SQL view over the object store.</li>
+        <li><strong>dbt</strong> for transformations. Staging models clean the
+          three sources into a shared vocabulary. Intermediate models
+          reconcile player identity across sources. Marts produce the
+          season-level and rolling-window aggregates the dashboards want.</li>
+        <li><strong>Apache Superset</strong> on top of DuckDB. Self-serve
+          dashboards for the league, an ad-hoc SQL Lab for me, and a
+          mechanism for the friends who actually like data to poke at things
+          without me being on call.</li>
+      </ul>
+
+      <p>
+        The whole thing runs as a docker-compose stack. R2 is the only piece
+        that isn't local. I could move it to MinIO and run the entire
+        platform on a Raspberry Pi if I wanted to make a point.
+      </p>
+
+      <h2>What the DuckDB post got right</h2>
+
+      <p>
+        It got the central claim right: the cost and complexity of a
+        warehouse-grade analytics setup, for problems below some surprisingly
+        high data ceiling, is mostly artificial. DuckDB on a modern laptop
+        churns through a full season of pitch-level data faster than the
+        meeting where I'd have explained why we needed Snowflake. dbt on top
+        of DuckDB feels like dbt on top of anything else — the engine is a
+        detail. Superset against DuckDB is a Superset connection like any
+        other; dashboards render fine.
+      </p>
+
+      <p>
+        The thing that I hadn't appreciated until I'd lived with it is how
+        much friction the warehouse pattern adds <em>upstream</em>. In a
+        cloud-warehouse setup, "let me check something" usually means
+        opening a notebook, configuring credentials, writing a query that
+        bills somebody, and waiting. With the box-sized stack, "let me check
+        something" means opening a DuckDB CLI against the same Parquet files
+        the marts are built from and getting an answer in the time it takes
+        to type. That changes the rate at which I form and discard
+        hypotheses. I argue with the data more, and I argue better.
+      </p>
+
+      <h2>What it doesn't replace</h2>
+
+      <p>
+        Two things. The first is concurrency. DuckDB is single-process by
+        design, which is fine for a fantasy league but wouldn't survive an
+        analytics org of fifty people running Looker at the same time. The
+        box-sized stack is genuinely a single-user or small-team pattern.
+        The original DuckDB post is honest about this; it's worth restating
+        because it's the constraint that determines whether the stack fits.
+      </p>
+
+      <p>
+        The second is the social and political part of a real warehouse —
+        access control, audit trails, lineage that satisfies a security
+        review, the meta-data layer a data governance team can point at. The
+        box has none of that, and shouldn't pretend to. The day-job
+        warehouse exists for reasons that don't go away just because DuckDB
+        is fast. The right read of the post is not "you don't need a
+        warehouse" — it's "a warehouse is one tool, and there's a class of
+        problems where it's the wrong one."
+      </p>
+
+      <h2>What I use it for now</h2>
+
+      <p>
+        Through the 2024 season, the platform was where every lineup
+        argument eventually went to die. Someone would claim a hot streak
+        was real; I'd pull the rolling expected-stats view and we'd see how
+        much of it was BABIP luck. Someone would propose a trade; we'd line
+        up rest-of-season projections side by side. The dashboards aren't
+        beautiful. They're functional, and they're <em>ours</em>, in a way
+        a screenshot from a public site can't be.
+      </p>
+
+      <p>
+        The longer-term reason the project matters to me is that it's the
+        same stack I now reach for whenever I have a data question outside
+        the day job. The Clay County livestock-auction project runs on a
+        cousin of it. The Alabama economic-indicators dashboard does too. At
+        some point in the last two years, "modern data stack in a box"
+        stopped being a clever demo and became my default starting point
+        for any analytics problem that isn't already inside someone else's
+        warehouse. The DuckDB post called it. I needed a season of fantasy
+        baseball to believe it.
+      </p>
+
+      <p>
+        <a href="https://github.com/waaronmorris/mlb-superset-dashboard">MLB Analytics Platform on GitHub →</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/waaronmorris/plyball">Plyball →</a>
+        &nbsp;·&nbsp;
+        <a href="https://duckdb.org/2022/10/12/modern-data-stack-in-a-box">The original DuckDB post →</a>
+      </p>
+
+      <p><a href="/blog/">← Back to all posts</a></p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> W. Aaron Morris</p>
+    <div class="footer-links">
+      <a href="https://github.com/waaronmorris">GitHub</a>
+      <a href="https://linkedin.com/in/w-aaron-morris-a894478">LinkedIn</a>
+      <a href="mailto:w.aaron.morris@gmail.com">Email</a>
+    </div>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>
